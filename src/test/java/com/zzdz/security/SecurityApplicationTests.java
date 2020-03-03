@@ -1,5 +1,7 @@
 package com.zzdz.security;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.SecurityManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,6 +13,7 @@ public class SecurityApplicationTests {
 
     @Test
     public void contextLoads() {
+
     }
 
 }

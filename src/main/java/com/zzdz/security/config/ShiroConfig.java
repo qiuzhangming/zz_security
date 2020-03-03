@@ -1,8 +1,13 @@
 package com.zzdz.security.config;
+import com.zzdz.security.shiro.CustomSessionManager;
 import com.zzdz.security.shiro.UserRealm;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,6 +26,7 @@ public class ShiroConfig {
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chain = new DefaultShiroFilterChainDefinition();
+
         //哪些请求可以匿名访问 anon:开放权限，可以理解为匿名用户或游客
         chain.addPathDefinition("/captcha.jpg", "anon");
         chain.addPathDefinition("/sys/login", "anon");
@@ -43,6 +49,32 @@ public class ShiroConfig {
         //除了以上的请求外，其它请求都需要登录。authc: 无参，需要认证
         chain.addPathDefinition("/**", "authc");
         return chain;
+    }
+
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        return redisManager;
+    }
+
+    public RedisCacheManager redisCacheManager() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(redisManager());
+        return redisCacheManager;
+    }
+
+    public RedisSessionDAO redisSessionDAO() {
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(redisManager());
+        //redisSessionDAO.setExpire();
+        return redisSessionDAO;
+    }
+
+
+    @Bean
+    public DefaultSessionManager sessionManager() {
+        CustomSessionManager customSessionManager = new CustomSessionManager();
+        customSessionManager.setSessionDAO(redisSessionDAO());
+        return customSessionManager;
     }
 
 }
