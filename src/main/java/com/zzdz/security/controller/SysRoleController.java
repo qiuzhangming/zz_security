@@ -7,8 +7,6 @@ import com.zzdz.security.dao.SysPermissionDao;
 import com.zzdz.security.dao.SysRoleDao;
 import com.zzdz.security.entity.SysPermissionEntity;
 import com.zzdz.security.entity.SysRoleEntity;
-import com.zzdz.security.entity.SysUserEntity;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

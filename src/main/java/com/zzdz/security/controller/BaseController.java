@@ -1,5 +1,6 @@
 package com.zzdz.security.controller;
 
+import com.zzdz.security.commom.entity.ProfileResult;
 import com.zzdz.security.entity.SysUserEntity;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.PrincipalCollection;
@@ -30,8 +31,9 @@ public class BaseController {
         PrincipalCollection principals = subject.getPrincipals();
         if(principals != null && !principals.isEmpty()){
             //2.获取安全数据
-            SysUserEntity user = (SysUserEntity) principals.getPrimaryPrincipal();
-            this.companyId = user.getCompanyId();
+            ProfileResult profileResult = (ProfileResult) principals.getPrimaryPrincipal();
+            this.companyId = profileResult.getCompanyId();
+            System.out.println("companyId:" + companyId);
         }
     }
 }

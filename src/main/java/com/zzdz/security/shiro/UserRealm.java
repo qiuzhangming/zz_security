@@ -1,6 +1,7 @@
 package com.zzdz.security.shiro;
 
 import com.alibaba.fastjson.JSON;
+import com.zzdz.security.commom.entity.ProfileResult;
 import com.zzdz.security.dao.SysUserDao;
 import com.zzdz.security.entity.SysPermissionEntity;
 import com.zzdz.security.entity.SysRoleEntity;
@@ -32,18 +33,11 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
 
         //1.获取安全数据
-        SysUserEntity userEntity = (SysUserEntity) principalCollection.getPrimaryPrincipal();
+        ProfileResult profileResult = (ProfileResult) principalCollection.getPrimaryPrincipal();
 
         //2.获取权限信息
-        Set<String> roles = new HashSet<>();
-        Set<String> perms = new HashSet<>();
-
-        for (SysRoleEntity sysRoleEntity : userEntity.getRoles()) {
-            roles.add(sysRoleEntity.getName());
-            for (SysPermissionEntity permission : sysRoleEntity.getPermissions()) {
-                perms.add(permission.getName());
-            }
-        }
+        Set<String> roles = profileResult.getRoles();
+        Set<String> perms = profileResult.getPerms();
 
         System.out.println("roles:" + JSON.toJSONString(roles));
         System.out.println("perms" + JSON.toJSONString(perms));
@@ -69,6 +63,7 @@ public class UserRealm extends AuthorizingRealm {
         String password = new String(token.getPassword());
         //查询用户信息
         SysUserEntity user = sysUserDao.findByNameAndPassword(username,password).get();
+
         //账号不存在
         if(user == null) {
             throw new UnknownAccountException("账号或密码不正确");
@@ -79,7 +74,9 @@ public class UserRealm extends AuthorizingRealm {
             throw new LockedAccountException("账号已被锁定,请联系管理员");
         }
 
-        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, user.getPassword(), getName());
+        ProfileResult profileResult = new ProfileResult(user);
+
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(profileResult, user.getPassword(), getName());
         return info;
     }
 

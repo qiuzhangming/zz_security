@@ -1,13 +1,17 @@
 package com.zzdz.security.config;
+
 import com.zzdz.security.shiro.CustomSessionManager;
 import com.zzdz.security.shiro.UserRealm;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.session.mgt.DefaultSessionManager;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,6 +49,7 @@ public class ShiroConfig {
 
 
         chain.addPathDefinition("/sys/**", "anon");
+        chain.addPathDefinition("/doc.html", "anon");
 
         //除了以上的请求外，其它请求都需要登录。authc: 无参，需要认证
         chain.addPathDefinition("/**", "authc");
@@ -53,9 +58,17 @@ public class ShiroConfig {
 
     public RedisManager redisManager() {
         RedisManager redisManager = new RedisManager();
+        //redisManager.setHost("127.0.0.1:6379");
+        //redisManager.setPassword("");
         return redisManager;
     }
 
+    /**
+     * doGetAuthorizationInfo执行两次的解决方法
+     * 对象需要id属性
+     * @return
+     */
+    @Bean
     public RedisCacheManager redisCacheManager() {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(redisManager());
@@ -65,7 +78,8 @@ public class ShiroConfig {
     public RedisSessionDAO redisSessionDAO() {
         RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
-        //redisSessionDAO.setExpire();
+        // expire time in seconds
+        //redisSessionDAO.setExpire(60*10);
         return redisSessionDAO;
     }
 
@@ -77,4 +91,16 @@ public class ShiroConfig {
         return customSessionManager;
     }
 
+    /**
+     * setUsePrefix(false)用于解决一个奇怪的bug。在引入spring aop的情况下。
+     * 在@Controller注解的类的方法中加入@RequiresRole等shiro注解，会导致该方法无法映射请求，导致返回404。
+     * 加入这项配置能解决这个bug，但是会造成验证2次
+     */
+    @Bean
+    public static DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator(){
+        DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator=new DefaultAdvisorAutoProxyCreator();
+        defaultAdvisorAutoProxyCreator.setUsePrefix(true);
+        //defaultAdvisorAutoProxyCreator.setProxyTargetClass(true);
+        return defaultAdvisorAutoProxyCreator;
+    }
 }

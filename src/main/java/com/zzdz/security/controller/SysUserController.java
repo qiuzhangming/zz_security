@@ -8,6 +8,7 @@ import com.zzdz.security.dao.SysRoleDao;
 import com.zzdz.security.dao.SysUserDao;
 import com.zzdz.security.entity.SysRoleEntity;
 import com.zzdz.security.entity.SysUserEntity;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class SysUserController extends BaseController {
      * 查询所有
      */
     @GetMapping("/user")
-    //@RequiresPermissions("sys:user:list")
+    @RequiresPermissions(value = {"sys:user:list", "or"}, logical = Logical.OR)
     public Result findAllByCompanyId(Pageable pageable) {
         Page<SysUserEntity> page = sysUserDao.findAllByCompanyId(companyId, pageable);
         return new Result(ResultCode.SUCCESS, page);

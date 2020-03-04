@@ -1,15 +1,24 @@
 package com.zzdz.security.commom.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@ApiModel(description= "返回响应数据")
 @Data
 @NoArgsConstructor
 public class Result {
-
+    @ApiModelProperty(value = "是否成功")
     private boolean success;//是否成功
+
+    @ApiModelProperty(value = "错误编号")
     private Integer code;// 返回码
+
+    @ApiModelProperty(value = "错误信息")
     private String message;//返回信息
+
+    @ApiModelProperty(value = "返回对象")
     private Object data;// 返回数据
 
     public Result(ResultCode code) {

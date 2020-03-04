@@ -7,6 +7,8 @@ import com.zzdz.security.commom.utils.IdWorker;
 import com.zzdz.security.dao.SysCompanyDao;
 import com.zzdz.security.entity.SysCompanyEntity;
 import com.zzdz.security.entity.SysUserEntity;
+import io.swagger.annotations.*;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import java.util.Date;
  * @email qiuzhangming@gmail.com
  * @date 2020-03-02 17:13:03
  */
+@Api(tags="公司管理")
 @RestController
 @RequestMapping("/sys")
 public class SysCompanyController extends BaseController {
@@ -33,6 +36,7 @@ public class SysCompanyController extends BaseController {
     /**
      * 查询所有
      */
+    @RequiresRoles({"role1"})
     @GetMapping("/company")
     public Result findAll(Pageable pageable) {
         Page<SysCompanyEntity> page = sysCompanyDao.findAll(pageable);
@@ -52,6 +56,16 @@ public class SysCompanyController extends BaseController {
     /**
      * 保存
      */
+    @ApiOperation(value="用户注册",notes="手机号、密码都是必输项，年龄随边填，但必须是数字")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="mobile",value="手机号",required=true,paramType="form"),
+            @ApiImplicitParam(name="password",value="密码",required=true,paramType="form"),
+            @ApiImplicitParam(name="age",value="年龄",required=true,paramType="form",dataType="Integer")
+    })
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
     @PostMapping("/company")
     public Result save(@RequestBody SysCompanyEntity sysCompany) {
         sysCompany.setId(idWorker.nextId());

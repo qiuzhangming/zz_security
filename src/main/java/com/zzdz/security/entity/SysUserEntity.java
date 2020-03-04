@@ -68,7 +68,7 @@ public class SysUserEntity implements Serializable {
 	 *  JsonIgnore: 忽略json转化
 	 */
 	@JsonIgnore
-	@ManyToMany
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name="sys_user_role",
 			joinColumns={@JoinColumn(name="user_id",referencedColumnName="id")},
 			inverseJoinColumns={@JoinColumn(name="role_id",referencedColumnName="id")}

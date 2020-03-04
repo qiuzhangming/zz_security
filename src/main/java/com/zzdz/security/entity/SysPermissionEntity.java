@@ -1,13 +1,14 @@
 package com.zzdz.security.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 
@@ -55,5 +56,9 @@ public class SysPermissionEntity implements Serializable {
 	 * 创建时间
 	 */
 	private Date createTime;
+
+	@JsonIgnore
+	@ManyToMany(mappedBy="permissions")  //不维护中间表
+	private Set<SysRoleEntity> roles = new HashSet<>(0);//角色与权限   多对多
 
 }
