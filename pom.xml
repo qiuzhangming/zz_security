@@ -21,7 +21,7 @@
         <druid.version>1.1.21</druid.version>
         <kaptcha.version>0.0.9</kaptcha.version>
         <swagger.version>2.9.2</swagger.version>
-        <fastjson.version>1.2.66</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <shiro-redis.version>3.2.3</shiro-redis.version>
     </properties>
 
